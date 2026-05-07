@@ -1,48 +1,43 @@
 #!/bin/bash
-cd "C:/Users/lieying/WorkBuddy/2026-05-07-task-2"
-
-# 检查当前分支
-echo "=== 当前分支 ==="
-git branch --show-current
-
-# 检查远程仓库
+echo "========================================"
+echo "推送 headhunting-api 到 GitHub"
+echo "用户名: lieying5198"
+echo "========================================"
 echo ""
-echo "=== 远程仓库 ==="
+
+# 检查 Git 状态
+echo "[状态] 检查 Git 环境..."
+if ! command -v git &> /dev/null; then
+    echo "[错误] 未找到 Git，请先安装 Git"
+    exit 1
+fi
+
+# 检查 Git 仓库
+if [ ! -d ".git" ]; then
+    echo "[步骤0] 初始化 Git 仓库..."
+    git init
+    git config user.name "lieying5198"
+    git config user.email "lieying5198@users.noreply.github.com"
+fi
+
+# 设置正确的 remote
+echo ""
+echo "[步骤1] 设置 remote URL..."
+git remote set-url origin git@github.com:lieying5198/headhunting-api.git
 git remote -v
 
-# 查看是否有待提交内容
+# 创建仓库
 echo ""
-echo "=== 待提交内容 ==="
-git status --short
-
-# 添加所有文件
-git add .
-
-# 提交（如果有待提交内容）
-if [ -n "$(git status --short)" ]; then
-    echo ""
-    echo "=== 提交代码 ==="
-    git commit -m "feat: 猎头AI加油站 v1.0.0"
-else
-    echo ""
-    echo "没有新的提交内容"
-fi
-
-# 检查远程是否有 main 分支
-echo ""
-echo "=== 远程分支 ==="
-git branch -r
-
-# 推送 - 优先推送 master，如果远程是 main 则用 main
-echo ""
-echo "=== 推送代码 ==="
-if git ls-remote --heads origin main | grep -q "main"; then
-    echo "远程有 main 分支，使用 main"
-    git push -u origin HEAD:main
-else
-    echo "远程没有 main 分支，使用 master"
-    git push -u origin master
-fi
+echo "[步骤2] 创建 GitHub 仓库..."
+gh repo create headhunting-api --source=. --private --remote= --confirm
 
 echo ""
-echo "=== 完成 ==="
+echo "[步骤3] 推送到 GitHub main 分支..."
+git branch -M main
+git push -u origin main --force
+
+echo ""
+echo "========================================"
+echo "完成！"
+echo "请访问: https://github.com/lieying5198/headhunting-api"
+echo "========================================"

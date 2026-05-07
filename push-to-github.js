@@ -25,7 +25,7 @@ try {
     console.log(remotes);
   } catch (e) {
     console.log('添加远程仓库...');
-    execSync('git remote add origin git@github.com:lieying5198/headhunting-power-station.git', { cwd: projectPath, stdio: 'inherit' });
+    execSync('git remote add origin git@github.com:lieying5198/headhunting-api-v2.git', { cwd: projectPath, stdio: 'inherit' });
   }
 
   // 3. 添加文件到暂存区
@@ -61,7 +61,7 @@ try {
   console.log('✅ 推送完成！');
   console.log('');
   console.log('📋 下一步操作:');
-  console.log('   1. 访问: https://github.com/lieying5198/headhunting-power-station');
+  console.log('   1. 访问: https://github.com/lieying5198/headhunting-api-v2');
   console.log('   2. 点击 Settings → Pages');
   console.log('   3. Source 选择 "master" 分支');
   console.log('   4. 等待 1-2 分钟，网站将上线到:');
