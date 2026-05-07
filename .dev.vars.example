@@ -1,0 +1,12 @@
+# Cloudflare Workers 部署配置
+# 复制此文件为 .dev.vars 并填入你的实际值
+
+# Cloudflare API Token (用于 CI/CD 部署)
+# 在 Cloudflare Dashboard -> Profile -> API Tokens 创建
+CLOUDFLARE_API_TOKEN=your_api_token_here
+
+# D1 数据库 ID (可选，用于本地开发)
+# D1_DATABASE_ID=ffcc6eb7-8bc2-476c-8623-9fb3fe0ee417
+
+# KV 命名空间 ID (可选，用于本地开发)
+# KV_NAMESPACE_ID=8840a80d33eb4d2f868f0d401ac4cff1

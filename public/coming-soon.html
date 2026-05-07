@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能开发中 - 猎头AI加油站</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --bg-dark: #0D1B2A;
+            --bg-card: #1B2838;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A8B2C1;
+            --accent: #00D4AA;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+        }
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .features {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .features h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        .feature-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .feature-item span {
+            color: var(--text-secondary);
+        }
+        .contact {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .contact h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .contact p {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, #FF8F66 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🦁</div>
+        <h1>猎头AI加油站</h1>
+        <p>平台正在紧张开发中，预计将于近期上线！<br>留下您的联系方式，我们将在第一时间通知您。</p>
+        
+        <div class="features">
+            <h2>即将上线的功能</h2>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>AI 驱动的 JD 深度解析</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>候选人精准评估系统</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>行业洞察报告</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>知识库智能检索</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>会员分销赚钱系统</span>
+            </div>
+        </div>
+        
+        <div class="contact">
+            <h3>📞 联系我们</h3>
+            <p>微信客服：猎头加油站官方客服<br>邮箱：support@lietougasstation.com</p>
+            <a href="mailto:support@lietougasstation.com" class="btn">
+                <i class="fas fa-envelope"></i>
+                联系我们
+            </a>
+        </div>
+        
+        <p style="margin-top: 40px; font-size: 0.9rem; color: var(--text-secondary);">
+            © 2026 猎头AI加油站 版权所有
+        </p>
+    </div>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+</html>

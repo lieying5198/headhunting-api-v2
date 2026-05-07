@@ -20,6 +20,57 @@ headhunting-power-station/
 └── 设计文档.md             # 功能设计文档
 ```
 
+## ☁️ Cloudflare Workers 部署
+
+### 方式一：GitHub Actions CI/CD（推荐）
+
+1. **在 GitHub 仓库设置 Secrets：**
+   - 进入仓库 Settings → Secrets and variables → Actions
+   - 添加 `CLOUDFLARE_API_TOKEN`（你的 Cloudflare API Token）
+
+2. **推送代码到 main 分支即可自动部署：**
+   ```bash
+   git add .
+   git commit -m "feat: 初始化项目"
+   git push origin main
+   ```
+
+### 方式二：本地部署
+
+1. **配置环境变量：**
+   ```bash
+   cp .dev.vars.example .dev.vars
+   # 编辑 .dev.vars，填入你的 CLOUDFLARE_API_TOKEN
+   ```
+
+2. **安装 Wrangler CLI：**
+   ```bash
+   npm install -g wrangler
+   ```
+
+3. **部署到生产环境：**
+   ```bash
+   npx wrangler deploy
+   ```
+
+4. **查看部署状态：**
+   ```bash
+   npx wrangler whoami
+   ```
+
+### 本地开发测试
+
+```bash
+# 安装依赖
+npm install
+
+# 本地开发服务器
+npx wrangler dev
+
+# 预览部署
+npx wrangler deploy --dry-run
+```
+
 ## 🚀 快速开始
 
 ### 1. 安装依赖
@@ -31,8 +82,8 @@ npm install
 ### 2. 配置环境
 
 ```bash
-cp .env.example .env
-# 编辑 .env 填入配置
+cp .dev.vars.example .dev.vars
+# 编辑 .dev.vars 填入配置
 ```
 
 ### 3. 启动服务
