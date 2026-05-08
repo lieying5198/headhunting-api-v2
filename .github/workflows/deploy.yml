@@ -31,23 +31,12 @@ jobs:
       - name: 🧪 运行测试
         run: npm test
 
-      - name: 📊 上传测试报告
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 7
-
   # ==================== 部署任务 ====================
   deploy:
     name: 🚀 部署到 Cloudflare
     runs-on: ubuntu-latest
-    needs: test  # 必须等待测试通过
+    needs: test
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment:
-      name: production
-      url: https://headhunting-api.${{ vars.CLOUDFLARE_SUBDOMAIN }}.workers.dev
     steps:
       - name: 📥 拉取代码
         uses: actions/checkout@v4
@@ -61,46 +50,13 @@ jobs:
       - name: 📦 安装依赖
         run: npm ci
 
-      - name: 🔧 配置 Wrangler
-        run: |
-          cat > wrangler.toml << 'EOF'
-          name = "headhunting-api"
-          main = "api/index.js"
-          compatibility_date = "2024-01-01"
-
-          [site]
-          bucket = "./public"
-
-          [[d1_databases]]
-          binding = "DB"
-          database_name = "headhunting-power-station"
-          database_id = "${{ vars.CLOUDFLARE_D1_ID }}"
-
-          [[kv_namespaces]]
-          binding = "USERS_KV"
-          id = "${{ vars.CLOUDFLARE_USERS_KV_ID }}"
-
-          [[kv_namespaces]]
-          binding = "POINTS_KV"
-          id = "${{ vars.CLOUDFLARE_POINTS_KV_ID }}"
-
-          [[kv_namespaces]]
-          binding = "ORDERS_KV"
-          id = "${{ vars.CLOUDFLARE_ORDERS_KV_ID }}"
-
-          [[kv_namespaces]]
-          binding = "SESSIONS_KV"
-          id = "${{ vars.CLOUDFLARE_SESSIONS_KV_ID }}"
-          EOF
-
       - name: 🚀 部署到 Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           environment: production
 
-      - name: ✅ 部署成功通知
+      - name: ✅ 部署成功
         run: |
           echo "🎉 部署完成！"
-          echo "📡 API 地址: https://headhunting-api.${{ vars.CLOUDFLARE_SUBDOMAIN }}.workers.dev"
-          echo "🧪 健康检查: https://headhunting-api.${{ vars.CLOUDFLARE_SUBDOMAIN }}.workers.dev/api/health"
+          echo "📡 API: https://headhunting-api.${{ vars.CLOUDFLARE_SUBDOMAIN }}.workers.dev/api/health"
