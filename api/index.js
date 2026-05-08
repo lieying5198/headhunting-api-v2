@@ -427,14 +427,14 @@ async function handleSignIn(request, env) {
   ).bind(user.id, yesterday).first();
   
   let points = 5; // 基础5积分
-  let连续天数 = 1;
+  let signDays = 1;
   
   if (yesterdaySign) {
-    连续天数 = yesterdaySign.days + 1 || 2;
+    signDays = yesterdaySign.days + 1 || 2;
     // 连续7天额外奖励
-    if (连续天数 >= 7) {
+    if (signDays >= 7) {
       points = 15;
-    } else if (连续天数 >= 3) {
+    } else if (signDays >= 3) {
       points = 10;
     }
   }
@@ -454,14 +454,14 @@ async function handleSignIn(request, env) {
   await db.prepare(`
     INSERT INTO point_logs (id, user_id, action, points, description, created_at)
     VALUES (?, ?, 'sign_in', ?, ?, ?)
-  `).bind(generateId(), user.id, points, `签到奖励${连续天数 > 1 ? '(连续' + 连续天数 + '天)' : ''}`, now).run();
+  `).bind(generateId(), user.id, points, `签到奖励${signDays > 1 ? '(连续' + signDays + '天)' : ''}`, now).run();
   
   return { 
     success: true, 
     data: { 
       points, 
       total_points: user.points + points,
-      sign_days: 连续天数,
+      sign_days: signDays,
       message: `签到成功，获得${points}积分`
     } 
   };
@@ -497,7 +497,7 @@ async function handleDailyTasks(request, env) {
   };
 }
 
-async function handleCompleteTask(request, env, params) {
+async function handleCompleteTask(request, env, ctx, params) {
   const user = await authenticate(request, env);
   const db = await getDb(env);
   const now = Date.now();
@@ -651,7 +651,7 @@ async function handleCreateOrder(request, env) {
   };
 }
 
-async function handleGetOrder(request, env, params) {
+async function handleGetOrder(request, env, ctx, params) {
   const user = await authenticate(request, env);
   const db = await getDb(env);
   
@@ -805,7 +805,7 @@ async function handleArticleList(request, env) {
   return { success: true, data: { articles: list, page, pageSize } };
 }
 
-async function handleArticleDetail(request, env, params) {
+async function handleArticleDetail(request, env, ctx, params) {
   const user = await authenticate(request, env).catch(() => null);
   const db = await getDb(env);
   
@@ -853,7 +853,7 @@ async function handleArticleDetail(request, env, params) {
   };
 }
 
-async function handleCategoryArticles(request, env, params) {
+async function handleCategoryArticles(request, env, ctx, params) {
   const user = await authenticate(request, env).catch(() => null);
   const db = await getDb(env);
   
@@ -870,7 +870,7 @@ async function handleCategoryArticles(request, env, params) {
   return { success: true, data: { articles: articles.results } };
 }
 
-async function handleArticleView(request, env, params) {
+async function handleArticleView(request, env, ctx, params) {
   await getDb(env).then(db => 
     db.prepare('UPDATE articles SET view_count = view_count + 1 WHERE id = ?')
       .bind(params.id).run()
@@ -878,7 +878,7 @@ async function handleArticleView(request, env, params) {
   return { success: true };
 }
 
-async function handleArticleLike(request, env, params) {
+async function handleArticleLike(request, env, ctx, params) {
   const user = await authenticate(request, env);
   const db = await getDb(env);
   
@@ -915,7 +915,7 @@ async function handleFavorites(request, env) {
   return { success: true, data: { favorites: favorites.results } };
 }
 
-async function handleAddFavorite(request, env, params) {
+async function handleAddFavorite(request, env, ctx, params) {
   const user = await authenticate(request, env);
   const db = await getDb(env);
   const now = Date.now();
@@ -928,7 +928,7 @@ async function handleAddFavorite(request, env, params) {
   return { success: true };
 }
 
-async function handleRemoveFavorite(request, env, params) {
+async function handleRemoveFavorite(request, env, ctx, params) {
   const user = await authenticate(request, env);
   const db = await getDb(env);
   
