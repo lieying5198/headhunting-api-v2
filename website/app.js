@@ -3,8 +3,8 @@
  * API 对接层
  */
 
-// API 基础地址 - 部署后替换
-const API_BASE = 'https://headhunting-api.your-username.workers.dev';
+// API 基础地址
+const API_BASE = 'https://headhunting-api.lieying5198.workers.dev';
 
 // 当前用户状态
 let currentUser = null;
@@ -180,12 +180,26 @@ function getLevelName(level) {
 // ========== 签到 ==========
 
 async function doSignIn() {
+  if (!authToken) {
+    showToast('请先登录', 'error');
+    return;
+  }
+  
   try {
     const result = await api('/api/points/sign-in', { method: 'POST' });
     
     if (result.success) {
       showToast(`签到成功！获得${result.data.points}积分`, 'success');
       closeModal('signInModal');
+      
+      // 更新签到按钮状态
+      const signInBtn = document.getElementById('signInBtn');
+      if (signInBtn) {
+        signInBtn.textContent = '今日已签到';
+        signInBtn.disabled = true;
+        signInBtn.classList.add('btn-ghost');
+        signInBtn.classList.remove('btn-primary');
+      }
       
       // 更新积分显示
       if (currentUser) {
@@ -324,7 +338,15 @@ function switchModal(from, to) {
 
 function showLogin() { showModal('loginModal'); }
 function showRegister() { showModal('registerModal'); }
-function showSignIn() { showModal('signInModal'); loadSignInStatus(); }
+function showSignIn() { 
+  if (!authToken) {
+    showToast('请先登录后再签到', 'error');
+    showLogin();
+    return;
+  }
+  showModal('signInModal'); 
+  loadSignInStatus(); 
+}
 function showInvite() { showModal('inviteModal'); }
 function showUpgrade() { document.getElementById('pricing').scrollIntoView({ behavior: 'smooth' }); }
 
@@ -433,3 +455,229 @@ function selectPayMethod(method) {
     el.classList.toggle('active', el.textContent.includes(method === 'wechat' ? '微信' : '支付'));
   });
 }
+
+// ========== 文章/课程加载 ==========
+
+async function loadCourses() {
+  try {
+    const result = await api('/api/articles/featured');
+    if (result.success && result.data.articles.length > 0) {
+      const html = result.data.articles.slice(0, 6).map(article => createArticleCard(article)).join('');
+      document.getElementById('courseList').innerHTML = html || '<div class="empty-state"><p>暂无课程</p></div>';
+    } else {
+      // 如果没有精选文章，显示最新课程
+      loadArticlesByCategory('course', 'courseList', 6);
+    }
+  } catch (error) {
+    // 如果API失败，显示默认内容
+    document.getElementById('courseList').innerHTML = getDefaultCourses();
+  }
+}
+
+async function loadResources() {
+  try {
+    const result = await api('/api/articles');
+    if (result.success && result.data.articles.length > 0) {
+      // 显示资源类文章
+      const resources = result.data.articles.filter(a => a.category === 'resource' || a.category === 'tool');
+      const html = resources.slice(0, 6).map(article => createArticleCard(article)).join('');
+      document.getElementById('resourceList').innerHTML = html || '<div class="empty-state"><p>暂无资源</p></div>';
+    } else {
+      document.getElementById('resourceList').innerHTML = getDefaultResources();
+    }
+  } catch (error) {
+    document.getElementById('resourceList').innerHTML = getDefaultResources();
+  }
+}
+
+async function loadArticlesByCategory(category, elementId, limit) {
+  try {
+    const result = await api(`/api/articles/category/${category}`);
+    if (result.success && result.data.articles.length > 0) {
+      const html = result.data.articles.slice(0, limit).map(article => createArticleCard(article)).join('');
+      document.getElementById(elementId).innerHTML = html;
+    } else {
+      document.getElementById(elementId).innerHTML = '<div class="empty-state"><p>暂无内容</p></div>';
+    }
+  } catch (error) {
+    document.getElementById(elementId).innerHTML = '<div class="empty-state"><p>加载失败</p></div>';
+  }
+}
+
+function createArticleCard(article) {
+  const categoryMap = {
+    course: { name: '课程', class: 'course' },
+    resource: { name: '资源', class: 'resource' },
+    news: { name: '资讯', class: 'news' },
+    tool: { name: '工具', class: 'tool' }
+  };
+  const cat = categoryMap[article.category] || { name: '文章', class: 'course' };
+  const vipText = article.view_level === 0 ? '' : `<span class="article-vip-badge">🔒 ${article.view_level === 1 ? 'VIP' : '高级VIP'}</span>`;
+
+  return `
+    <div class="article-card" onclick="viewArticle('${article.id}')">
+      <div class="article-card-header">
+        <span class="article-tag ${cat.class}">${cat.name}</span>
+        ${article.is_featured ? '<span class="article-tag vip">⭐ 精选</span>' : ''}
+      </div>
+      <h3 class="article-card-title">${article.title}</h3>
+      <p class="article-card-summary">${article.summary || '点击查看详情...'}</p>
+      <div class="article-card-footer">
+        <div class="article-stats">
+          <span>👁 ${article.view_count || 0}</span>
+          <span>❤️ ${article.like_count || 0}</span>
+        </div>
+        ${vipText}
+      </div>
+    </div>
+  `;
+}
+
+function viewArticle(id) {
+  // 如果已登录，跳转到文章详情
+  if (authToken) {
+    window.location.href = `article.html?id=${id}`;
+  } else {
+    // 未登录则提示登录
+    showRegister();
+  }
+}
+
+function showAllCourses() {
+  if (!authToken) {
+    showRegister();
+    return;
+  }
+  showToast('课程中心即将上线', 'info');
+}
+
+function getDefaultCourses() {
+  return `
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag course">课程</span>
+        <span class="article-tag vip">⭐ 精选</span>
+      </div>
+      <h3 class="article-card-title">【干货】猎头新人必看：如何快速找到优质候选人</h3>
+      <p class="article-card-summary">本文分享5个实用的候选人搜索技巧，帮助猎头新人快速提升业绩。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 1,258</span><span>❤️ 89</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag course">课程</span>
+        <span class="article-tag vip">⭐ 精选</span>
+      </div>
+      <h3 class="article-card-title">猎头沟通话术大全：这样跟候选人沟通，转化率翻倍</h3>
+      <p class="article-card-summary">从开场白到薪资谈判，完整的猎头沟通话术模板。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 892</span><span>❤️ 67</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag course">课程</span>
+      </div>
+      <h3 class="article-card-title">猎头如何做好BD？5个步骤拿下大客户</h3>
+      <p class="article-card-summary">分享开发企业客户的实战经验，从目标客户画像到商务谈判。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 567</span><span>❤️ 45</span></div>
+        <span class="article-vip-badge">🔒 VIP</span>
+      </div>
+    </div>
+  `;
+}
+
+function getDefaultResources() {
+  return `
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag resource">资源</span>
+        <span class="article-tag vip">⭐ 精选</span>
+      </div>
+      <h3 class="article-card-title">【收藏】2024年各行业薪酬报告汇总</h3>
+      <p class="article-card-summary">整理了互联网、金融、医疗、制造等行业的薪酬数据。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 2,341</span><span>❤️ 156</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag tool">工具</span>
+      </div>
+      <h3 class="article-card-title">【工具推荐】猎头必备的10款效率工具</h3>
+      <p class="article-card-summary">从简历解析到项目管理，推荐实用的猎头工具。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 1,892</span><span>❤️ 123</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="showRegister()">
+      <div class="article-card-header">
+        <span class="article-tag news">资讯</span>
+        <span class="article-tag vip">⭐ 精选</span>
+      </div>
+      <h3 class="article-card-title">【行业洞察】2024年猎头行业发展趋势报告</h3>
+      <p class="article-card-summary">分析猎头行业的现状和未来发展方向，AI赋能招聘成趋势。</p>
+      <div class="article-card-footer">
+        <div class="article-stats"><span>👁 3,421</span><span>❤️ 234</span></div>
+      </div>
+    </div>
+  `;
+}
+
+// 更新初始化函数
+document.addEventListener('DOMContentLoaded', () => {
+  // 检查登录状态
+  const savedUser = localStorage.getItem('user');
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+    updateUserUI();
+    loadUserData();
+    loadInviteStats();
+  }
+
+  // 检查URL中的邀请码
+  const urlParams = new URLSearchParams(window.location.search);
+  const inviteCode = urlParams.get('invite');
+  if (inviteCode) {
+    document.getElementById('inviteCode').value = inviteCode;
+    // 如果未登录，显示注册弹窗
+    if (!authToken) {
+      setTimeout(() => showRegister(), 500);
+    }
+  }
+
+  // 移动端菜单
+  document.getElementById('mobileMenu').addEventListener('click', () => {
+    document.getElementById('nav').classList.toggle('active');
+  });
+
+  // 平滑滚动
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(anchor.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('nav').classList.remove('active');
+      }
+    });
+  });
+
+  // 点击模态框外部关闭
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  });
+
+  // 加载统计数据
+  loadPublicStats();
+
+  // 加载文章列表
+  loadCourses();
+  loadResources();
+});
