@@ -17,9 +17,10 @@
       </div>
       <nav class="nav" id="nav">
         <a href="#home" class="nav-link active">首页</a>
-        <a href="#features" class="nav-link">功能</a>
+        <a href="community.html" class="nav-link">社区</a>
+        <a href="ai-chat.html" class="nav-link">AI助手</a>
+        <a href="#courses" class="nav-link">精选课程</a>
         <a href="#pricing" class="nav-link">会员</a>
-        <a href="#about" class="nav-link">关于</a>
       </nav>
       <div class="header-actions">
         <button class="btn btn-ghost" id="loginBtn">登录</button>
@@ -115,6 +116,33 @@
           <h3>问答咨询</h3>
           <p>AI智能问答，解决招聘难题，分享实战经验</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选课程 -->
+  <section class="courses" id="courses">
+    <div class="container">
+      <h2 class="section-title">🔥 精选课程</h2>
+      <p class="section-desc">行业专家倾情分享，快速提升你的猎头技能</p>
+      <div class="article-grid" id="courseList">
+        <!-- 课程列表通过 JS 动态加载 -->
+        <div class="loading">加载中...</div>
+      </div>
+      <div class="section-more">
+        <button class="btn btn-outline" onclick="showAllCourses()">查看全部课程 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 干货资源 -->
+  <section class="resources" id="resources">
+    <div class="container">
+      <h2 class="section-title">📚 干货资源</h2>
+      <p class="section-desc">实用的工具、模板、报告，助你事半功倍</p>
+      <div class="article-grid" id="resourceList">
+        <!-- 资源列表通过 JS 动态加载 -->
+        <div class="loading">加载中...</div>
       </div>
     </div>
   </section>

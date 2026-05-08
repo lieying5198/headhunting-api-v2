@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📤 贡献资料 - 猎头能量站</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 50px 0;
+      text-align: center;
+    }
+
+    .contribute-section {
+      padding: 50px 0;
+    }
+
+    .contribute-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* 贡献表单 */
+    .contribute-form {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 40px;
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.02);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* AI评估结果 */
+    .ai-result {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 25px;
+      display: none;
+    }
+
+    .ai-result.show {
+      display: block;
+    }
+
+    .ai-score {
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .ai-points {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    .ai-feedback {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+    }
+
+    /* 我的贡献列表 */
+    .my-contributions {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .contribution-item {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .contribution-item:last-child {
+      border-bottom: none;
+    }
+
+    .contribution-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .contribution-title {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .contribution-status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .status-approved { background: #e8f5e9; color: #388e3c; }
+    .status-pending { background: #fff3e0; color: #f57c00; }
+    .status-duplicate { background: #ffebee; color: #d32f2f; }
+
+    .contribution-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .contribution-points {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    /* 贡献规则 */
+    .rules-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .rules-box h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .rules-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .rules-list li {
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+      color: #666;
+    }
+
+    .rules-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .contribute-form { padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🦁</span>
+        <span class="logo-text">猎头能量站</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link">首页</a>
+        <a href="articles.html" class="nav-link">文章</a>
+        <a href="community.html" class="nav-link active">社区</a>
+        <a href="ai-chat.html" class="nav-link">AI助手</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="loginBtn" onclick="showLogin()">登录</button>
+        <button class="btn btn-primary" id="registerBtn" onclick="showRegister()">免费注册</button>
+      </div>
+      <button class="mobile-menu" id="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 页面头部 -->
+  <section class="page-header">
+    <div class="container">
+      <h1>📤 贡献资料</h1>
+      <p>分享优质猎头资料，获得贡献点，兑换VIP会员</p>
+    </div>
+  </section>
+
+  <!-- 贡献表单 -->
+  <section class="contribute-section">
+    <div class="contribute-container">
+      <!-- 规则说明 -->
+      <div class="rules-box">
+        <h3>📋 贡献规则</h3>
+        <ul class="rules-list">
+          <li>分享猎头行业优质资料、模板、工具、课程</li>
+          <li>AI将评估资料原创性和实用价值（1-10分）</li>
+          <li>评估通过后，按评分发放贡献点（1分=1贡献点）</li>
+          <li>重复或抄袭内容不予奖励，检测到重复直接驳回</li>
+          <li>50贡献点兑换月度VIP，200点年度VIP，500点永久VIP</li>
+        </ul>
+      </div>
+
+      <!-- 表单 -->
+      <div class="contribute-form">
+        <h2 class="form-title">提交你的资料</h2>
+        <form id="contributeForm" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">资料标题 *</label>
+            <input type="text" class="form-input" id="title" placeholder="例如：猎头BD话术模板大全" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">资料内容/摘要</label>
+            <textarea class="form-textarea" id="content" placeholder="请粘贴资料的主要内容或摘要，帮助AI评估价值"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">原文链接（可选）</label>
+            <input type="url" class="form-input" id="sourceUrl" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">文件链接（可选）</label>
+            <input type="url" class="form-input" id="fileUrl" placeholder="百度网盘/CDN链接等">
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            🚀 提交资料
+          </button>
+        </form>
+
+        <!-- AI评估结果 -->
+        <div class="ai-result" id="aiResult">
+          <div class="ai-score" id="aiScore">-</div>
+          <div class="ai-points" id="aiPoints">获得 0 贡献点</div>
+          <div class="ai-feedback" id="aiFeedback"></div>
+        </div>
+      </div>
+
+      <!-- 我的贡献 -->
+      <div class="my-contributions" id="myContributionsSection" style="display:none;">
+        <h2 class="form-title">📚 我的贡献</h2>
+        <div id="myContributionsList">
+          <p style="color: #666; text-align: center; padding: 40px;">加载中...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部 -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-copy">© 2024 猎头能量站</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('user')) {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+        updateUserUI();
+        loadMyContributions();
+      }
+
+      document.getElementById('mobileMenu').addEventListener('click', () => {
+        document.getElementById('nav').classList.toggle('active');
+      });
+    });
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+
+      if (!authToken) {
+        showRegister();
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'AI评估中...';
+
+      const data = {
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value,
+        source_url: document.getElementById('sourceUrl').value,
+        file_url: document.getElementById('fileUrl').value
+      };
+
+      try {
+        const result = await api('/api/contributions', {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+
+        if (result.success) {
+          // 显示AI评估结果
+          const aiResult = document.getElementById('aiResult');
+          aiResult.classList.add('show');
+
+          document.getElementById('aiScore').textContent = result.data.ai_score || '-';
+          document.getElementById('aiPoints').textContent =
+            result.data.is_duplicate
+              ? '⚠️ 检测到重复内容，不予奖励'
+              : `🎉 获得 ${result.data.ai_points || 0} 贡献点`;
+          document.getElementById('aiFeedback').textContent =
+            result.data.ai_feedback || '';
+
+          // 清空表单
+          document.getElementById('contributeForm').reset();
+
+          // 刷新我的贡献
+          loadMyContributions();
+        } else {
+          alert(result.error || '提交失败');
+        }
+      } catch (e) {
+        alert('提交失败: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 提交资料';
+      }
+    }
+
+    async function loadMyContributions() {
+      if (!authToken) return;
+
+      try {
+        const result = await api('/api/contributions/my');
+        const section = document.getElementById('myContributionsSection');
+        const list = document.getElementById('myContributionsList');
+
+        if (result.success) {
+          section.style.display = 'block';
+
+          if (result.data.contributions.length === 0) {
+            list.innerHTML = '<p style="color: #999; text-align: center;">暂无贡献记录，快去提交第一份资料吧！</p>';
+            return;
+          }
+
+          list.innerHTML = result.data.contributions.map(c => {
+            const statusMap = {
+              0: { text: '待审核', class: 'status-pending' },
+              1: { text: '已通过', class: 'status-approved' },
+              2: { text: '已拒绝', class: 'status-duplicate' },
+              3: { text: '重复', class: 'status-duplicate' }
+            };
+            const status = statusMap[c.status] || statusMap[0];
+
+            return `
+              <div class="contribution-item">
+                <div class="contribution-header">
+                  <span class="contribution-title">${escapeHtml(c.title)}</span>
+                  <span class="contribution-status ${status.class}">${status.text}</span>
+                </div>
+                <div class="contribution-meta">
+                  <span>${formatDate(c.created_at)}</span>
+                  <span>👍 ${c.like_count || 0}</span>
+                  <span>👁 ${c.view_count || 0}</span>
+                  ${c.ai_points > 0 ? `<span class="contribution-points">+${c.ai_points}贡献点</span>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.error('加载贡献记录失败:', e);
+      }
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return '';
+      const date = new Date(timestamp);
+      return `${date.getMonth()+1}月${date.getDate()}日`;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

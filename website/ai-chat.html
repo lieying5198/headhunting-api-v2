@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤖 AI助手 - 猎头能量站</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .chat-page {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 70px);
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .chat-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+
+    .chat-header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* 使用次数提示 */
+    .usage-bar {
+      background: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    /* 聊天消息区 */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f5f7fa;
+    }
+
+    .message {
+      max-width: 700px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+    }
+
+    .message-avatar.ai {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .message-avatar.user {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .message-content {
+      background: white;
+      border-radius: 16px;
+      padding: 15px 20px;
+      line-height: 1.7;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      flex: 1;
+    }
+
+    .message.user .message-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    /* 欢迎消息 */
+    .welcome-card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .welcome-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .welcome-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .welcome-desc {
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 25px;
+    }
+
+    .quick-questions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .quick-btn {
+      padding: 10px 20px;
+      background: #f0f4ff;
+      border: none;
+      border-radius: 20px;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .quick-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    /* 输入区 */
+    .chat-input-area {
+      background: white;
+      padding: 15px 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .chat-input-container {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 1rem;
+      resize: none;
+      max-height: 150px;
+      line-height: 1.5;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .send-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* VIP升级提示 */
+    .vip-prompt {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .vip-prompt a {
+      color: white;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    /* 加载动画 */
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 5px 0;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #667eea;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .chat-messages { padding: 15px; }
+      .message { gap: 8px; }
+      .message-avatar { width: 35px; height: 35px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header" style="position:relative;z-index:100;">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🦁</span>
+        <span class="logo-text">猎头能量站</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link">首页</a>
+        <a href="articles.html" class="nav-link">文章</a>
+        <a href="community.html" class="nav-link">社区</a>
+        <a href="ai-chat.html" class="nav-link active">AI助手</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="loginBtn" onclick="showLogin()">登录</button>
+        <button class="btn btn-primary" id="registerBtn" onclick="showRegister()">免费注册</button>
+      </div>
+      <button class="mobile-menu" id="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 聊天页面 -->
+  <div class="chat-page">
+    <div class="chat-header">
+      <h1>🤖 猎头AI助手</h1>
+      <p>专注猎头行业，帮你解决工作难题</p>
+      <div class="usage-bar" id="usageBar">
+        今日使用：<span id="todayUsage">-</span> / <span id="dailyLimit">10</span> 次
+      </div>
+    </div>
+
+    <div id="vipPrompt"></div>
+
+    <!-- 消息区 -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome-card" id="welcomeCard">
+        <div class="welcome-icon">🤖</div>
+        <h2 class="welcome-title">你好，我是猎头AI助手</h2>
+        <p class="welcome-desc">
+          我专注于猎头行业，可以帮你：<br>
+          · 分析JD和寻访策略<br>
+          · 提供薪资谈判建议<br>
+          · 解答猎头工作中的问题<br>
+          · 分享行业洞察和经验
+        </p>
+        <div class="quick-questions">
+          <button class="quick-btn" onclick="sendQuickQuestion('帮我分析这个JD：高级Java工程师')">分析JD</button>
+          <button class="quick-btn" onclick="sendQuickQuestion('候选人期望薪资比预算高30%怎么谈？')">薪资谈判</button>
+          <button class="quick-btn" onclick="sendQuickQuestion('推荐一些高效的候选人寻访渠道')">寻访渠道</button>
+          <button class="quick-btn" onclick="sendQuickQuestion('如何快速建立候选人信任关系？')">信任关系</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 输入区 -->
+    <div class="chat-input-area">
+      <div class="chat-input-container">
+        <textarea
+          class="chat-input"
+          id="messageInput"
+          placeholder="输入你的问题..."
+          rows="1"
+          onkeydown="handleKeydown(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          ➤
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let isVip = false;
+    let dailyLimit = 10;
+    let todayUsage = 0;
+    let chatHistory = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 从localStorage加载聊天历史
+      const saved = localStorage.getItem('aiChatHistory');
+      if (saved) {
+        chatHistory = JSON.parse(saved);
+        chatHistory.forEach(msg => renderMessage(msg.role, msg.content));
+      }
+
+      if (localStorage.getItem('user')) {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+        updateUserUI();
+        checkUsage();
+      }
+
+      document.getElementById('mobileMenu').addEventListener('click', () => {
+        document.getElementById('nav').classList.toggle('active');
+      });
+
+      document.getElementById('messageInput').focus();
+    });
+
+    async function checkUsage() {
+      try {
+        const result = await api('/api/ai/usage');
+        if (result.success) {
+          isVip = result.data.is_vip;
+          todayUsage = result.data.today_usage;
+          dailyLimit = result.data.daily_limit || 10;
+
+          document.getElementById('todayUsage').textContent = todayUsage;
+          document.getElementById('dailyLimit').textContent = dailyLimit || '∞';
+
+          if (isVip) {
+            document.getElementById('vipPrompt').innerHTML = `
+              <div class="vip-prompt">
+                🌟 您是VIP会员，AI助手无限制使用
+              </div>
+            `;
+            dailyLimit = Infinity;
+          } else if (todayUsage >= 10) {
+            document.getElementById('vipPrompt').innerHTML = `
+              <div class="vip-prompt">
+                今日次数已用完！<a href="index.html#pricing">升级VIP解锁无限制</a>
+              </div>
+            `;
+          }
+        }
+      } catch (e) {
+        console.error('检查使用量失败:', e);
+      }
+    }
+
+    function handleKeydown(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+    }
+
+    function sendQuickQuestion(question) {
+      document.getElementById('messageInput').value = question;
+      sendMessage();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      if (!authToken) {
+        showRegister();
+        return;
+      }
+
+      // 检查使用次数
+      if (!isVip && todayUsage >= 10) {
+        alert('今日AI对话次数已用完（免费用户每天10次），升级VIP可解锁无限制使用');
+        return;
+      }
+
+      // 隐藏欢迎卡片
+      document.getElementById('welcomeCard').style.display = 'none';
+
+      // 添加用户消息
+      renderMessage('user', message);
+      chatHistory.push({ role: 'user', content: message });
+      saveHistory();
+
+      // 清空输入
+      input.value = '';
+      input.style.height = 'auto';
+
+      // 显示加载状态
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'message';
+      loadingDiv.id = 'loadingMsg';
+      loadingDiv.innerHTML = `
+        <div class="message-avatar ai">🤖</div>
+        <div class="message-content">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      `;
+      document.getElementById('chatMessages').appendChild(loadingDiv);
+      scrollToBottom();
+
+      try {
+        const result = await api('/api/ai/chat', {
+          method: 'POST',
+          body: JSON.stringify({
+            message,
+            history: chatHistory.slice(-7) // 最近3轮对话
+          })
+        });
+
+        // 移除加载状态
+        loadingDiv.remove();
+
+        if (result.success) {
+          renderMessage('ai', result.data.reply);
+          chatHistory.push({ role: 'ai', content: result.data.reply });
+          saveHistory();
+
+          // 更新使用次数
+          todayUsage = result.data.usage;
+          document.getElementById('todayUsage').textContent = todayUsage;
+
+          if (!isVip && todayUsage >= 10) {
+            document.getElementById('vipPrompt').innerHTML = `
+              <div class="vip-prompt">
+                今日次数已用完！<a href="index.html#pricing">升级VIP解锁无限制</a>
+              </div>
+            `;
+          }
+        } else {
+          renderMessage('ai', '抱歉，' + result.error);
+        }
+      } catch (e) {
+        loadingDiv.remove();
+        renderMessage('ai', '抱歉，AI服务暂时不可用，请稍后重试。');
+      }
+    }
+
+    function renderMessage(role, content) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message' + (role === 'user' ? ' user' : '');
+
+      const avatar = role === 'user' ? '👤' : '🤖';
+      const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+      // 简单Markdown转换
+      const formatted = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>')
+        .replace(/· /g, '· ');
+
+      msgDiv.innerHTML = `
+        <div class="message-avatar ${role}">${avatar}</div>
+        <div class="message-content">
+          ${formatted}
+          <div class="message-time">${time}</div>
+        </div>
+      `;
+
+      messagesDiv.appendChild(msgDiv);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      const messagesDiv = document.getElementById('chatMessages');
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function saveHistory() {
+      // 只保存最近10条
+      const toSave = chatHistory.slice(-10);
+      localStorage.setItem('aiChatHistory', JSON.stringify(toSave));
+    }
+  </script>
+</body>
+</html>

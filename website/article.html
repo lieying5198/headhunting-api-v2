@@ -58,6 +58,109 @@
       color: #666;
       margin-bottom: 20px;
     }
+
+    /* 原文跳转页面样式 */
+    .article-redirect-container {
+      max-width: 520px;
+      margin: 80px auto;
+      text-align: center;
+      padding: 50px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+      color: #fff;
+    }
+    .article-redirect-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .article-redirect-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    .article-redirect-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .article-redirect-meta {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .article-redirect-meta .article-tag {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .article-redirect-meta .article-tag.vip {
+      background: rgba(255,215,0,0.3);
+    }
+    .article-redirect-meta .redirect-views {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .article-redirect-divider {
+      width: 60px;
+      height: 3px;
+      background: rgba(255,255,255,0.4);
+      margin: 0 auto 30px;
+      border-radius: 2px;
+    }
+    .article-redirect-btn {
+      display: inline-block;
+      background: #fff;
+      color: #667eea;
+      padding: 16px 40px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .article-redirect-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      text-decoration: none;
+      background: #f8f9fa;
+    }
+    .article-redirect-source {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 20px;
+    }
+    .article-redirect-timer {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 16px;
+    }
+    .article-redirect-back {
+      display: inline-block;
+      margin-top: 24px;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .article-redirect-back:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -87,6 +190,7 @@
     // 从URL获取文章ID
     const params = new URLSearchParams(window.location.search);
     const articleId = params.get('id');
+    let currentArticle = null;
 
     async function loadArticleDetail() {
       if (!articleId) {
@@ -95,12 +199,11 @@
       }
 
       try {
-        // 获取文章详情
         const result = await api(`/api/articles/${articleId}`);
-        
+
         if (result.success) {
-          const article = result.data.article;
-          renderArticle(article);
+          currentArticle = result.data.article;
+          renderArticle(currentArticle);
         } else {
           document.getElementById('articleContent').innerHTML = '<p>加载失败</p>';
         }
@@ -115,12 +218,57 @@
         course: { name: '课程', class: 'course' },
         tool: { name: '工具', class: 'tool' },
         resource: { name: '资源', class: 'resource' },
-        case: { name: '案例', class: 'case' }
+        case: { name: '案例', class: 'case' },
+        news: { name: '资讯', class: 'news' },
+        method: { name: '方法论', class: 'course' }
       };
       const cat = categoryMap[article.category] || { name: '文章', class: 'course' };
-      
+
+      // 如果有原文链接，显示精美的跳转提示页
+      if (article.source_url) {
+        document.getElementById('articleContent').innerHTML = `
+          <div class="article-redirect-container">
+            <div class="article-redirect-icon">📖</div>
+            <h2 class="article-redirect-title">正在跳转至原文</h2>
+            <p class="article-redirect-subtitle">${escapeHtml(article.title)}</p>
+            <div class="article-redirect-meta">
+              <span class="article-tag ${cat.class}">${cat.name}</span>
+              ${article.is_featured ? '<span class="article-tag vip">⭐ 精选</span>' : ''}
+              <span class="redirect-views">👁 ${article.view_count || 0} 阅读</span>
+            </div>
+            <div class="article-redirect-divider"></div>
+            <a href="${article.source_url}" target="_blank" class="article-redirect-btn" id="redirectBtn">
+              🔗 点击继续阅读原文
+            </a>
+            <p class="article-redirect-source">来源: ${getSourceName(article.source_url)}</p>
+            <p class="article-redirect-timer" id="timerText">页面将在 <span id="countdown">3</span> 秒后自动跳转...</p>
+            <a class="article-redirect-back" href="index.html">← 返回猎头能量站</a>
+          </div>
+        `;
+
+        // 记录阅读
+        if (typeof authToken !== 'undefined' && authToken) {
+          api(`/api/articles/${articleId}/view`, { method: 'POST' }).catch(() => {});
+        }
+
+        // 自动跳转计时器
+        let seconds = 3;
+        const countdownEl = document.getElementById('countdown');
+        const timer = setInterval(() => {
+          seconds--;
+          if (countdownEl) countdownEl.textContent = seconds;
+          if (seconds <= 0) {
+            clearInterval(timer);
+            window.open(article.source_url, '_blank');
+          }
+        }, 1000);
+
+        return;
+      }
+
+      // 无原文链接，显示内嵌内容
       const isVipLocked = article.view_level > 0 && !isVipUser();
-      
+
       let contentHtml = article.content || '<p>暂无详细内容</p>';
       if (isVipLocked) {
         contentHtml += `
@@ -139,7 +287,7 @@
           <header class="article-detail-header">
             <span class="article-tag ${cat.class}">${cat.name}</span>
             ${article.is_featured ? '<span class="article-tag vip">⭐ 精选</span>' : ''}
-            <h1>${article.title}</h1>
+            <h1>${escapeHtml(article.title)}</h1>
             <div class="article-detail-meta">
               <span>👁 ${article.view_count || 0} 阅读</span>
               <span>❤️ ${article.like_count || 0} 点赞</span>
@@ -151,10 +299,33 @@
           </div>
         </article>
       `;
-      
+
       // 记录阅读
-      if (authToken) {
+      if (typeof authToken !== 'undefined' && authToken) {
         api(`/api/articles/${articleId}/view`, { method: 'POST' }).catch(() => {});
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getSourceName(url) {
+      if (!url) return '未知来源';
+      try {
+        const host = new URL(url).hostname;
+        if (host.includes('sohu')) return '搜狐';
+        if (host.includes('zhihu')) return '知乎';
+        if (host.includes('36kr')) return '36氪';
+        if (host.includes('huxiu')) return '虎嗅';
+        if (host.includes('juejin')) return '掘金';
+        if (host.includes('weixin') || host.includes('mp.weixin')) return '微信公众号';
+        return host;
+      } catch {
+        return '未知来源';
       }
     }
 
@@ -165,7 +336,7 @@
     }
 
     function isVipUser() {
-      return currentUser && currentUser.vip_level > 0;
+      return typeof currentUser !== 'undefined' && currentUser && currentUser.vip_level > 0;
     }
 
     // 页面加载时获取文章详情

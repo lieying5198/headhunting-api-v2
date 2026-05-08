@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤝 猎头交友 - 猎头能量站</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 50px 0;
+      text-align: center;
+    }
+
+    .friends-section {
+      padding: 50px 0;
+    }
+
+    .friends-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* 标签页 */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #666;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .tab:hover { color: #4facfe; }
+    .tab.active {
+      color: #4facfe;
+      font-weight: 600;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #4facfe;
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* 用户卡片 */
+    .user-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vip-badge {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+    }
+
+    .user-bio {
+      color: #666;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .user-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .user-tag {
+      background: #f0f4ff;
+      color: #4facfe;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .btn-connect {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .btn-accept {
+      background: #4caf50;
+      color: white;
+    }
+
+    .btn-reject {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .btn-connected {
+      background: #e8f5e9;
+      color: #4caf50;
+      cursor: default;
+    }
+
+    /* 搜索栏 */
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
+      font-size: 1rem;
+    }
+
+    .search-btn {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    /* 申请卡片 */
+    .request-card {
+      background: #fff8e1;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .request-message {
+      color: #666;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    /* 统计 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #4facfe;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🦁</span>
+        <span class="logo-text">猎头能量站</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link">首页</a>
+        <a href="articles.html" class="nav-link">文章</a>
+        <a href="community.html" class="nav-link active">社区</a>
+        <a href="ai-chat.html" class="nav-link">AI助手</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="loginBtn" onclick="showLogin()">登录</button>
+        <button class="btn btn-primary" id="registerBtn" onclick="showRegister()">免费注册</button>
+      </div>
+      <button class="mobile-menu" id="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 页面头部 -->
+  <section class="page-header">
+    <div class="container">
+      <h1>🤝 猎头交友</h1>
+      <p>拓展人脉圈，连接优秀猎头同行</p>
+    </div>
+  </section>
+
+  <!-- 内容区 -->
+  <section class="friends-section">
+    <div class="friends-container">
+      <!-- 标签页 -->
+      <div class="tabs">
+        <button class="tab active" data-tab="discover">发现</button>
+        <button class="tab" data-tab="requests">申请<span id="requestCount"></span></button>
+        <button class="tab" data-tab="connections">我的connections</button>
+        <button class="tab" data-tab="profile">我的资料</button>
+      </div>
+
+      <!-- 发现页 -->
+      <div id="discoverTab">
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput" placeholder="搜索用户名/公司/职位..." onkeyup="handleSearchKeyup(event)">
+          <button class="search-btn" onclick="doSearch()">🔍</button>
+        </div>
+        <div id="usersList"><div class="empty-state">输入关键词搜索猎头同行</div></div>
+      </div>
+
+      <!-- 申请页 -->
+      <div id="requestsTab" style="display:none;">
+        <div id="requestsList"><div class="empty-state">暂无连接申请</div></div>
+      </div>
+
+      <!-- connections页 -->
+      <div id="connectionsTab" style="display:none;">
+        <div id="connectionsList"><div class="empty-state">暂无connections</div></div>
+      </div>
+
+      <!-- 个人资料页 -->
+      <div id="profileTab" style="display:none;">
+        <div class="user-card" style="flex-direction:column;text-align:center;padding:40px;">
+          <div class="user-avatar" style="width:100px;height:100px;font-size:3rem;">
+            ${currentUser?.username?.charAt(0) || '我'}
+          </div>
+          <div class="user-name" style="margin-top:20px;font-size:1.5rem;">
+            ${currentUser?.username || '未登录'}
+            ${currentUser?.vip_level > 0 ? '<span class="vip-badge">VIP</span>' : ''}
+          </div>
+        </div>
+
+        <form id="profileForm" style="background:white;padding:30px;border-radius:16px;margin-top:20px;">
+          <h3 style="margin-bottom:20px;">完善个人资料</h3>
+          <div class="form-group">
+            <label class="form-label">个人简介</label>
+            <textarea class="form-textarea" id="pBio" placeholder="一句话介绍自己"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">公司</label>
+            <input type="text" class="form-input" id="pCompany" placeholder="所属公司">
+          </div>
+          <div class="form-group">
+            <label class="form-label">职位</label>
+            <input type="text" class="form-input" id="pPosition" placeholder="猎头顾问/高级顾问/合伙人等">
+          </div>
+          <div class="form-group">
+            <label class="form-label">专注行业</label>
+            <input type="text" class="form-input" id="pIndustry" placeholder="互联网/金融/医疗等">
+          </div>
+          <div class="form-group">
+            <label class="form-label">从业年限</label>
+            <input type="number" class="form-input" id="pYearsExp" placeholder="X年">
+          </div>
+          <button type="submit" class="submit-btn" style="background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            保存资料
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部 -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-copy">© 2024 猎头能量站</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    let currentTab = 'discover';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('user')) {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+        updateUserUI();
+      }
+
+      document.getElementById('mobileMenu').addEventListener('click', () => {
+        document.getElementById('nav').classList.toggle('active');
+      });
+
+      // 绑定标签切换
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          switchTab(tab.dataset.tab);
+        });
+      });
+
+      // 绑定表单提交
+      document.getElementById('profileForm').addEventListener('submit', handleProfileSubmit);
+    });
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('discoverTab').style.display = tab === 'discover' ? 'block' : 'none';
+      document.getElementById('requestsTab').style.display = tab === 'requests' ? 'block' : 'none';
+      document.getElementById('connectionsTab').style.display = tab === 'connections' ? 'block' : 'none';
+      document.getElementById('profileTab').style.display = tab === 'profile' ? 'block' : 'none';
+
+      if (tab === 'requests') loadRequests();
+      if (tab === 'connections') loadConnections();
+      if (tab === 'profile') loadMyProfile();
+    }
+
+    function handleSearchKeyup(event) {
+      if (event.key === 'Enter') doSearch();
+    }
+
+    async function doSearch() {
+      const keyword = document.getElementById('searchInput').value.trim();
+      if (!keyword) return;
+
+      if (!authToken) {
+        showRegister();
+        return;
+      }
+
+      const list = document.getElementById('usersList');
+      list.innerHTML = '<div class="empty-state">搜索中...</div>';
+
+      try {
+        const result = await api('/api/users?keyword=' + encodeURIComponent(keyword));
+        if (result.success && result.data.users.length > 0) {
+          list.innerHTML = result.data.users.map(u => createUserCard(u)).join('');
+        } else {
+          list.innerHTML = '<div class="empty-state">未找到匹配的用户</div>';
+        }
+      } catch (e) {
+        list.innerHTML = '<div class="empty-state">搜索失败</div>';
+      }
+    }
+
+    function createUserCard(user) {
+      return `
+        <div class="user-card">
+          <div class="user-avatar">${user.username?.charAt(0) || '?'}</div>
+          <div class="user-info">
+            <div class="user-name">
+              ${escapeHtml(user.username)}
+              ${user.vip_level > 0 ? '<span class="vip-badge">VIP</span>' : ''}
+            </div>
+            ${user.bio ? `<p class="user-bio">${escapeHtml(user.bio)}</p>` : ''}
+            <div class="user-tags">
+              ${user.company ? `<span class="user-tag">🏢 ${escapeHtml(user.company)}</span>` : ''}
+              ${user.position ? `<span class="user-tag">💼 ${escapeHtml(user.position)}</span>` : ''}
+              ${user.industry ? `<span class="user-tag">🏭 ${escapeHtml(user.industry)}</span>` : ''}
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="action-btn btn-connect" onclick="sendConnection('${user.id}')">🤝 连接</button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function sendConnection(targetId) {
+      if (!authToken) {
+        showRegister();
+        return;
+      }
+
+      try {
+        const result = await api('/api/connections', {
+          method: 'POST',
+          body: JSON.stringify({ target_user_id: targetId })
+        });
+
+        if (result.success) {
+          alert('连接请求已发送！');
+        } else {
+          alert(result.error || '发送失败');
+        }
+      } catch (e) {
+        alert('发送失败: ' + e.message);
+      }
+    }
+
+    async function loadRequests() {
+      if (!authToken) return;
+
+      try {
+        const result = await api('/api/connections?type=pending');
+        const list = document.getElementById('requestsList');
+        const count = document.getElementById('requestCount');
+
+        count.textContent = result.data.connections?.length > 0 ? `(${result.data.connections.length})` : '';
+
+        if (result.data.connections?.length > 0) {
+          list.innerHTML = result.data.connections.map(c => `
+            <div class="request-card">
+              <div class="request-header">
+                <strong>${escapeHtml(c.user_name)}</strong>
+                <span style="color:#999;">${formatDate(c.created_at)}</span>
+              </div>
+              ${c.message ? `<p class="request-message">"${escapeHtml(c.message)}"</p>` : ''}
+              <div class="user-actions">
+                <button class="action-btn btn-accept" onclick="handleConnection('${c.id}', 'accept')">✓ 接受</button>
+                <button class="action-btn btn-reject" onclick="handleConnection('${c.id}', 'reject')">✗ 拒绝</button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div class="empty-state">暂无连接申请</div>';
+        }
+      } catch (e) {
+        console.error('加载申请失败:', e);
+      }
+    }
+
+    async function loadConnections() {
+      if (!authToken) return;
+
+      try {
+        const result = await api('/api/connections?type=accepted');
+        const list = document.getElementById('connectionsList');
+
+        if (result.data.connections?.length > 0) {
+          list.innerHTML = result.data.connections.map(c => {
+            const name = c.user_id === currentUser?.id ? c.target_name : c.user_name;
+            return `
+              <div class="user-card">
+                <div class="user-avatar">${name?.charAt(0) || '?'}</div>
+                <div class="user-info">
+                  <div class="user-name">${escapeHtml(name)}</div>
+                  <div class="user-tags">
+                    <span class="user-tag">🤝 已连接</span>
+                    <span style="color:#999;font-size:0.85rem;">${formatDate(c.updated_at)}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          list.innerHTML = '<div class="empty-state">暂无connections，去发现页找同行吧</div>';
+        }
+      } catch (e) {
+        console.error('加载connections失败:', e);
+      }
+    }
+
+    async function loadMyProfile() {
+      if (!authToken) return;
+
+      try {
+        const result = await api('/api/profile/social');
+        if (result.success && result.data.profile) {
+          const p = result.data.profile;
+          document.getElementById('pBio').value = p.bio || '';
+          document.getElementById('pCompany').value = p.company || '';
+          document.getElementById('pPosition').value = p.position || '';
+          document.getElementById('pIndustry').value = p.industry || '';
+          document.getElementById('pYearsExp').value = p.years_exp || '';
+        }
+      } catch (e) {
+        console.error('加载资料失败:', e);
+      }
+    }
+
+    async function handleProfileSubmit(event) {
+      event.preventDefault();
+
+      if (!authToken) {
+        showRegister();
+        return;
+      }
+
+      const data = {
+        bio: document.getElementById('pBio').value,
+        company: document.getElementById('pCompany').value,
+        position: document.getElementById('pPosition').value,
+        industry: document.getElementById('pIndustry').value,
+        years_exp: parseInt(document.getElementById('pYearsExp').value) || 0
+      };
+
+      try {
+        const result = await api('/api/profile/social', {
+          method: 'PUT',
+          body: JSON.stringify(data)
+        });
+
+        if (result.success) {
+          alert('资料保存成功！');
+        } else {
+          alert(result.error);
+        }
+      } catch (e) {
+        alert('保存失败: ' + e.message);
+      }
+    }
+
+    async function handleConnection(id, action) {
+      try {
+        const result = await api('/api/connections/' + id, {
+          method: 'PUT',
+          body: JSON.stringify({ action })
+        });
+
+        if (result.success) {
+          loadRequests();
+          if (action === 'accept') {
+            alert('已接受连接请求！');
+          }
+        } else {
+          alert(result.error);
+        }
+      } catch (e) {
+        alert('操作失败: ' + e.message);
+      }
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      return d.getMonth()+1 + '月' + d.getDate() + '日';
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

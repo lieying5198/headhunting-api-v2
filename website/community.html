@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏠 猎头社区 - 猎头能量站</title>
+  <meta name="description" content="猎头社区 - 资源共享、互助问答、人脉连接、AI助手">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* 社区专属样式 */
+    .community-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .community-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .community-hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* 模块卡片区 */
+    .modules-section {
+      padding: 60px 0;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .module-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .module-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+
+    .module-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .module-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .module-card p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .module-card .module-tag {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    /* 贡献点说明 */
+    .points-banner {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .points-banner h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .points-rules {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .points-rule {
+      background: rgba(255,255,255,0.2);
+      padding: 20px 30px;
+      border-radius: 12px;
+    }
+
+    .points-rule .points {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .points-rule .desc {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* 活跃用户 */
+    .active-section {
+      padding: 60px 0;
+      background: #f8f9fa;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    /* 快速统计 */
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .community-hero h1 { font-size: 1.8rem; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .points-rules { gap: 20px; }
+      .stats-row { gap: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🦁</span>
+        <span class="logo-text">猎头能量站</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link">首页</a>
+        <a href="articles.html" class="nav-link">文章</a>
+        <a href="community.html" class="nav-link active">社区</a>
+        <a href="ai-chat.html" class="nav-link">AI助手</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="loginBtn" onclick="showLogin()">登录</button>
+        <button class="btn btn-primary" id="registerBtn" onclick="showRegister()">免费注册</button>
+      </div>
+      <button class="mobile-menu" id="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 英雄区 -->
+  <section class="community-hero">
+    <div class="container">
+      <h1>🤝 猎头社区</h1>
+      <p>资源共享 · 互助问答 · 人脉连接 · AI赋能</p>
+    </div>
+  </section>
+
+  <!-- 快速统计 -->
+  <section style="background: white; padding: 40px 0;">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-value" id="statUsers">-</div>
+          <div class="stat-label">社区成员</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statContributions">-</div>
+          <div class="stat-label">优质资料</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statQuestions">-</div>
+          <div class="stat-label">互助问答</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statConnections">-</div>
+          <div class="stat-label">人脉连接</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 贡献点说明 -->
+  <section class="points-banner">
+    <div class="container">
+      <h2>🎁 贡献点体系</h2>
+      <p>分享优质资料，获得贡献点，兑换VIP会员</p>
+      <div class="points-rules">
+        <div class="points-rule">
+          <div class="points">1-10</div>
+          <div class="desc">每份优质资料</div>
+        </div>
+        <div class="points-rule">
+          <div class="points">50</div>
+          <div class="desc">月度VIP</div>
+        </div>
+        <div class="points-rule">
+          <div class="points">200</div>
+          <div class="desc">年度VIP</div>
+        </div>
+        <div class="points-rule">
+          <div class="points">500</div>
+          <div class="desc">永久VIP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 模块入口 -->
+  <section class="modules-section">
+    <div class="container">
+      <h2 class="section-title">选择你需要的模块</h2>
+      <div class="modules-grid">
+        <a href="contribute.html" class="module-card">
+          <div class="module-icon">📤</div>
+          <h3>贡献资料</h3>
+          <p>分享优质猎头资料、模板、工具，AI评估价值，获得1-10贡献点</p>
+          <span class="module-tag">去贡献</span>
+        </a>
+
+        <a href="qa.html" class="module-card">
+          <div class="module-icon">❓</div>
+          <h3>互助问答</h3>
+          <p>猎头同行互相帮助，提出问题、分享经验、悬赏求解</p>
+          <span class="module-tag">去提问</span>
+        </a>
+
+        <a href="friends.html" class="module-card">
+          <div class="module-icon">🤝</div>
+          <h3>猎头交友</h3>
+          <p>拓展人脉圈，连接同行猎头，分享行业见解</p>
+          <span class="module-tag">去连接</span>
+        </a>
+
+        <a href="ai-chat.html" class="module-card">
+          <div class="module-icon">🤖</div>
+          <h3>AI助手</h3>
+          <p>智能猎头助手，帮你分析JD、寻访策略、薪资谈判</p>
+          <span class="module-tag">去咨询</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">🦁</span>
+          <span>猎头能量站</span>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">首页</a>
+          <a href="community.html">社区</a>
+        </div>
+      </div>
+      <p class="footer-copy">© 2024 猎头能量站 · 让每个猎头都能量满满</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      // 检查登录状态
+      if (localStorage.getItem('user')) {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+        updateUserUI();
+      }
+
+      // 移动端菜单
+      document.getElementById('mobileMenu').addEventListener('click', () => {
+        document.getElementById('nav').classList.toggle('active');
+      });
+
+      // 加载统计数据
+      loadStats();
+    });
+
+    // 加载统计数据
+    async function loadStats() {
+      try {
+        const result = await api('/api/public/stats');
+        if (result.success) {
+          document.getElementById('statUsers').textContent = result.data.total_users || 0;
+          document.getElementById('statContributions').textContent = result.data.total_articles || 0;
+          document.getElementById('statQuestions').textContent = '-';
+          document.getElementById('statConnections').textContent = '-';
+        }
+      } catch (e) {
+        console.error('加载统计失败:', e);
+      }
+    }
+  </script>
+</body>
+</html>
