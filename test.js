@@ -233,10 +233,11 @@ test('邀请码生成函数正确', () => {
 test('日期格式化函数正确', () => {
   const formatDate = (timestamp) => {
     const d = new Date(timestamp);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
   };
 
-  assertEqual(formatDate(1700000000000), '2023-11-15');
+  // 使用 UTC 时间确保跨时区一致性：2023-11-15 00:00:00 UTC
+  assertEqual(formatDate(1700006400000), '2023-11-15');
 });
 
 test('金额计算保留两位小数', () => {
