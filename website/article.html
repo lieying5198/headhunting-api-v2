@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情 - 猎头能量站</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .article-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .article-detail-header {
+      margin-bottom: 30px;
+    }
+    .article-detail-meta {
+      display: flex;
+      gap: 15px;
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .article-detail-content {
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .article-detail-content h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .article-detail-content p {
+      margin-bottom: 15px;
+    }
+    .article-detail-content ul, .article-detail-content ol {
+      margin-bottom: 15px;
+      padding-left: 25px;
+    }
+    .article-detail-content li {
+      margin-bottom: 8px;
+    }
+    .article-back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #3b82f6;
+      cursor: pointer;
+    }
+    .article-back-btn:hover {
+      text-decoration: underline;
+    }
+    .vip-lock-overlay {
+      background: linear-gradient(to bottom, transparent, #fff);
+      padding: 100px 0;
+      text-align: center;
+    }
+    .vip-lock-msg {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">🦁 猎头能量站</a>
+      <div class="nav-links" id="navLinks"></div>
+      <div class="nav-auth" id="navAuth">
+        <button class="btn btn-sm" onclick="showLogin()">登录</button>
+        <button class="btn btn-sm btn-primary" onclick="showRegister()">注册</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div id="articleContent">
+      <div class="loading">加载中...</div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2024 猎头能量站 · 猎英盟出品</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // 从URL获取文章ID
+    const params = new URLSearchParams(window.location.search);
+    const articleId = params.get('id');
+
+    async function loadArticleDetail() {
+      if (!articleId) {
+        document.getElementById('articleContent').innerHTML = '<p>文章不存在</p>';
+        return;
+      }
+
+      try {
+        // 获取文章详情
+        const result = await api(`/api/articles/${articleId}`);
+        
+        if (result.success) {
+          const article = result.data;
+          renderArticle(article);
+        } else {
+          document.getElementById('articleContent').innerHTML = '<p>加载失败</p>';
+        }
+      } catch (error) {
+        console.error('加载文章失败:', error);
+        document.getElementById('articleContent').innerHTML = '<p>加载失败，请重试</p>';
+      }
+    }
+
+    function renderArticle(article) {
+      const categoryMap = {
+        course: { name: '课程', class: 'course' },
+        tool: { name: '工具', class: 'tool' },
+        resource: { name: '资源', class: 'resource' },
+        case: { name: '案例', class: 'case' }
+      };
+      const cat = categoryMap[article.category] || { name: '文章', class: 'course' };
+      
+      const isVipLocked = article.view_level > 0 && !isVipUser();
+      
+      let contentHtml = article.content || '<p>暂无详细内容</p>';
+      if (isVipLocked) {
+        contentHtml += `
+          <div class="vip-lock-overlay">
+            <div class="vip-lock-msg">🔒 此部分内容需要VIP会员才能查看</div>
+            <button class="btn btn-primary" onclick="window.location.href='index.html#pricing'">
+              升级VIP会员
+            </button>
+          </div>
+        `;
+      }
+
+      document.getElementById('articleContent').innerHTML = `
+        <a class="article-back-btn" href="index.html">← 返回首页</a>
+        <article class="article-detail-container">
+          <header class="article-detail-header">
+            <span class="article-tag ${cat.class}">${cat.name}</span>
+            ${article.is_featured ? '<span class="article-tag vip">⭐ 精选</span>' : ''}
+            <h1>${article.title}</h1>
+            <div class="article-detail-meta">
+              <span>👁 ${article.view_count || 0} 阅读</span>
+              <span>❤️ ${article.like_count || 0} 点赞</span>
+              <span>📅 ${formatDate(article.created_at)}</span>
+            </div>
+          </header>
+          <div class="article-detail-content">
+            ${contentHtml}
+          </div>
+        </article>
+      `;
+      
+      // 记录阅读
+      if (authToken) {
+        api(`/api/articles/${articleId}/view`, { method: 'POST' }).catch(() => {});
+      }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('zh-CN');
+    }
+
+    function isVipUser() {
+      return currentUser && currentUser.vip_level > 0;
+    }
+
+    // 页面加载时获取文章详情
+    loadArticleDetail();
+  </script>
+</body>
+</html>
